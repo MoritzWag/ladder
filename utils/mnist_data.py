@@ -1,6 +1,6 @@
 from __future__ import print_function
 import os
-import urllib
+import urllib.request
 import random
 import numpy as np
 import gzip
@@ -16,7 +16,7 @@ def get_data(filename, directory,
         os.mkdir(directory)
     filepath = os.path.join(directory, filename)
     if not os.path.exists(filepath):
-        filepath, _ = urllib.urlretrieve(data_url + filename, filepath)
+        filepath, _ = urllib.request.urlretrieve(data_url + filename, filepath)
         statinfo = os.stat(filepath)
         if verbose:
             print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
