@@ -122,43 +122,44 @@ def main():
     validation_images_filename = os.path.join(args.data_dir, "validation_images.p")
     validation_labels_filename = os.path.join(args.data_dir, "validation_labels.p")
 
-    pdb.set_trace()
+    #pdb.set_trace()
 
-    print("Loading Data")
-    with open(train_labelled_images_filename) as f:
-        train_labelled_images = f.read()
-    train_labelled_images = train_labelled_images.reshape(train_labelled_images.shape[0], 784)
-    with open(train_labelled_labels_filename) as f:
-        train_labelled_labels = f.read().astype(int)
-    with open(train_unlabelled_images_filename) as f:
-        train_unlabelled_images = f.read()
-    train_unlabelled_images = train_unlabelled_images.reshape(train_unlabelled_images.shape[0], 784)
-    with open(train_unlabelled_labels_filename) as f:
-        train_unlabelled_labels = f.read().astype(int)
-    with open(validation_images_filename) as f:
-        validation_images = f.read()
-    validation_images = validation_images.reshape(validation_images.shape[0], 784)
-    with open(validation_labels_filename) as f:
-        validation_labels = f.read().astype(int)
-
-    #    
     #print("Loading Data")
     #with open(train_labelled_images_filename) as f:
-    #    train_labelled_images = pickle.load(f)
+    #    train_labelled_images = f.read()
     #train_labelled_images = train_labelled_images.reshape(train_labelled_images.shape[0], 784)
     #with open(train_labelled_labels_filename) as f:
-    #    train_labelled_labels = pickle.load(f).astype(int)
+    #    train_labelled_labels = f.read().astype(int)
     #with open(train_unlabelled_images_filename) as f:
-    #    train_unlabelled_images = pickle.load(f)
+    #    train_unlabelled_images = f.read()
     #train_unlabelled_images = train_unlabelled_images.reshape(train_unlabelled_images.shape[0], 784)
     #with open(train_unlabelled_labels_filename) as f:
-    #    train_unlabelled_labels = pickle.load(f).astype(int)
+    #    train_unlabelled_labels = f.read().astype(int)
     #with open(validation_images_filename) as f:
-    #    validation_images = pickle.load(f)
+    #    validation_images = f.read()
     #validation_images = validation_images.reshape(validation_images.shape[0], 784)
     #with open(validation_labels_filename) as f:
-    #    validation_labels = pickle.load(f).astype(int)
+    #    validation_labels = f.read().astype(int)
 
+        
+    print("Loading Data")
+    with open(train_labelled_images_filename, 'rb') as f:
+        train_labelled_images = pickle.load(f)
+    train_labelled_images = train_labelled_images.reshape(train_labelled_images.shape[0], 784)
+    with open(train_labelled_labels_filename, 'rb') as f:
+        train_labelled_labels = pickle.load(f).astype(int)
+    with open(train_unlabelled_images_filename, 'rb') as f:
+        train_unlabelled_images = pickle.load(f)
+    train_unlabelled_images = train_unlabelled_images.reshape(train_unlabelled_images.shape[0], 784)
+    with open(train_unlabelled_labels_filename, 'rb') as f:
+        train_unlabelled_labels = pickle.load(f).astype(int)
+    with open(validation_images_filename, 'rb') as f:
+        validation_images = pickle.load(f)
+    validation_images = validation_images.reshape(validation_images.shape[0], 784)
+    with open(validation_labels_filename, 'rb') as f:
+       validation_labels = pickle.load(f).astype(int)
+
+    #pdb.set_trace()
     # Create DataLoaders
     unlabelled_dataset = TensorDataset(torch.FloatTensor(train_unlabelled_images), torch.LongTensor(train_unlabelled_labels))
     unlabelled_loader = DataLoader(unlabelled_dataset, batch_size=batch_size, shuffle=True, **kwargs)
@@ -269,21 +270,22 @@ def main():
             bn_hat_z_layers_unlabelled = ladder.decoder_bn_hat_z_layers(hat_z_layers_unlabelled, z_pre_layers_unlabelled)
 
             # calculate costs
+            #pdb.set_trace()
             cost_supervised = loss_supervised.forward(output_noise_labelled, labelled_target)
             cost_unsupervised = 0.
             assert len(z_layers_unlabelled) == len(bn_hat_z_layers_unlabelled)
             for cost_lambda, z, bn_hat_z in zip(unsupervised_costs_lambda, z_layers_unlabelled, bn_hat_z_layers_unlabelled):
                 c = cost_lambda * loss_unsupervised.forward(bn_hat_z, z)
-                cost_unsupervised += c
+                cost_unsupervised += c.item()
 
             # backprop
             cost = cost_supervised + cost_unsupervised
             cost.backward()
             optimizer.step()
 
-            agg_cost += cost.data[0]
-            agg_supervised_cost += cost_supervised.data[0]
-            agg_unsupervised_cost += cost_unsupervised.data[0]
+            agg_cost += cost.data.item()
+            agg_supervised_cost += cost_supervised.data.item()
+            agg_unsupervised_cost += cost_unsupervised
             num_batches += 1
 
             if ind_labelled == ind_limit:

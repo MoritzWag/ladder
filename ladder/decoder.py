@@ -92,9 +92,11 @@ class Decoder(torch.nn.Module):
             return None
 
 
+
 class StackedDecoders(torch.nn.Module):
     def __init__(self, d_in, d_decoders, image_size, use_cuda):
         super(StackedDecoders, self).__init__()
+        #pdb.set_trace()
         self.bn_u_top = torch.nn.BatchNorm1d(d_in, affine=False)
         self.decoders_ref = []
         self.decoders = torch.nn.Sequential()
@@ -130,15 +132,19 @@ class StackedDecoders(torch.nn.Module):
 
     def bn_hat_z_layers(self, hat_z_layers, z_pre_layers):
         # TODO: Calculate batchnorm using GPU Tensors.
-        pdb.set_trace()
+        #pdb.set_trace()
         assert len(hat_z_layers) == len(z_pre_layers)
         hat_z_layers_normalized = []
         for i, (hat_z, z_pre) in enumerate(zip(hat_z_layers, z_pre_layers)):
+            #pdb.set_trace()
             if self.use_cuda:
                 ones = Variable(torch.ones(z_pre.size()[0], 1).cuda())
             else:
                 ones = Variable(torch.ones(z_pre.size()[0], 1))
+            # change from torch.mean(z_pre, 0) to torch.mean(z_pre, 1)
             mean = torch.mean(z_pre, 0)
+            mean = mean.view(-1, mean.size()[0])
+            #mean = torch.mean(z_pre, 1)
             noise_var = np.random.normal(loc=0.0, scale=1 - 1e-10, size=z_pre.size())
             if self.use_cuda:
                 var = np.var(z_pre.data.cpu().numpy() + noise_var, axis=0).reshape(1, z_pre.size()[1])
