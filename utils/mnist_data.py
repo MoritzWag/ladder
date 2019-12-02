@@ -7,6 +7,7 @@ import gzip
 from collections import defaultdict
 import pickle
 import argparse
+import pdb
 
 
 def get_data(filename, directory,
@@ -75,6 +76,7 @@ def dump_pickle(filepath, d):
         pickle.dump(d, f)
 
 
+
 def main():
     # command line arguments
     parser = argparse.ArgumentParser(description="Parser for MNIST data generation")
@@ -118,8 +120,10 @@ def main():
 
     train_data_label_buckets = defaultdict(list)
 
+    
     for image, label in zip(train_images, train_labels):
-        train_data_label_buckets[label].append((image, label))
+        label.astype('int')
+        train_data_label_buckets[int(label)].append((image, int(label)))
 
     num_labels = len(train_data_label_buckets)
 
@@ -128,8 +132,9 @@ def main():
     train_unlabelled_data_images = []
     train_unlabelled_data_labels = []
 
+    #pdb.set_trace()
     for label, label_data in train_data_label_buckets.items():
-        count = n_labelled / num_labels
+        count = int(n_labelled / num_labels)
         for v in label_data[:count]:
             train_labelled_data_images.append(v[0])
             train_labelled_data_labels.append(v[1])

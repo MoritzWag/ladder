@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch.nn.parameter import Parameter
 from torch.autograd import Variable
+import pdb
 
 
 class Decoder(torch.nn.Module):
@@ -129,6 +130,7 @@ class StackedDecoders(torch.nn.Module):
 
     def bn_hat_z_layers(self, hat_z_layers, z_pre_layers):
         # TODO: Calculate batchnorm using GPU Tensors.
+        pdb.set_trace()
         assert len(hat_z_layers) == len(z_pre_layers)
         hat_z_layers_normalized = []
         for i, (hat_z, z_pre) in enumerate(zip(hat_z_layers, z_pre_layers)):

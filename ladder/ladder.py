@@ -4,13 +4,14 @@ import numpy as np
 import argparse
 import pickle
 import os
+import pdb
 
 import torch
 from torch.autograd import Variable
 from torch.optim import Adam
 from torch.utils.data import TensorDataset, DataLoader
-from encoder import StackedEncoders
-from decoder import StackedDecoders
+from ladder.encoder import StackedEncoders
+from ladder.decoder import StackedDecoders
 
 
 class Ladder(torch.nn.Module):
@@ -121,22 +122,42 @@ def main():
     validation_images_filename = os.path.join(args.data_dir, "validation_images.p")
     validation_labels_filename = os.path.join(args.data_dir, "validation_labels.p")
 
+    pdb.set_trace()
+
     print("Loading Data")
     with open(train_labelled_images_filename) as f:
-        train_labelled_images = pickle.load(f)
+        train_labelled_images = f.read()
     train_labelled_images = train_labelled_images.reshape(train_labelled_images.shape[0], 784)
     with open(train_labelled_labels_filename) as f:
-        train_labelled_labels = pickle.load(f).astype(int)
+        train_labelled_labels = f.read().astype(int)
     with open(train_unlabelled_images_filename) as f:
-        train_unlabelled_images = pickle.load(f)
+        train_unlabelled_images = f.read()
     train_unlabelled_images = train_unlabelled_images.reshape(train_unlabelled_images.shape[0], 784)
     with open(train_unlabelled_labels_filename) as f:
-        train_unlabelled_labels = pickle.load(f).astype(int)
+        train_unlabelled_labels = f.read().astype(int)
     with open(validation_images_filename) as f:
-        validation_images = pickle.load(f)
+        validation_images = f.read()
     validation_images = validation_images.reshape(validation_images.shape[0], 784)
     with open(validation_labels_filename) as f:
-        validation_labels = pickle.load(f).astype(int)
+        validation_labels = f.read().astype(int)
+
+    #    
+    #print("Loading Data")
+    #with open(train_labelled_images_filename) as f:
+    #    train_labelled_images = pickle.load(f)
+    #train_labelled_images = train_labelled_images.reshape(train_labelled_images.shape[0], 784)
+    #with open(train_labelled_labels_filename) as f:
+    #    train_labelled_labels = pickle.load(f).astype(int)
+    #with open(train_unlabelled_images_filename) as f:
+    #    train_unlabelled_images = pickle.load(f)
+    #train_unlabelled_images = train_unlabelled_images.reshape(train_unlabelled_images.shape[0], 784)
+    #with open(train_unlabelled_labels_filename) as f:
+    #    train_unlabelled_labels = pickle.load(f).astype(int)
+    #with open(validation_images_filename) as f:
+    #    validation_images = pickle.load(f)
+    #validation_images = validation_images.reshape(validation_images.shape[0], 784)
+    #with open(validation_labels_filename) as f:
+    #    validation_labels = pickle.load(f).astype(int)
 
     # Create DataLoaders
     unlabelled_dataset = TensorDataset(torch.FloatTensor(train_unlabelled_images), torch.LongTensor(train_unlabelled_labels))
