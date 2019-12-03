@@ -55,6 +55,7 @@ class Encoder(torch.nn.Module):
         self.buffer_tilde_z = None
 
     def bn_gamma_beta(self, x):
+        #pdb.set_trace()
         if self.use_cuda:
             ones = Parameter(torch.ones(x.size()[0], 1).cuda())
         else:

@@ -272,7 +272,7 @@ def main():
             # calculate costs
             #pdb.set_trace()
             cost_supervised = loss_supervised.forward(output_noise_labelled, labelled_target)
-            cost_unsupervised = 0.
+                
             assert len(z_layers_unlabelled) == len(bn_hat_z_layers_unlabelled)
             for cost_lambda, z, bn_hat_z in zip(unsupervised_costs_lambda, z_layers_unlabelled, bn_hat_z_layers_unlabelled):
                 c = cost_lambda * loss_unsupervised.forward(bn_hat_z, z)

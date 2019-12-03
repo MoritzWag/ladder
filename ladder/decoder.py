@@ -43,7 +43,7 @@ class Decoder(torch.nn.Module):
             self.V = torch.nn.Linear(d_in, d_out, bias=False)
             self.V.weight.data = torch.randn(self.V.weight.data.size()) / np.sqrt(d_in)
             # batch-normalization for u
-            self.bn_normalize = torch.nn.BatchNorm1d(d_out, affine=False)
+            self.bn_normalize = torch.nn.BatchNorm1d(d_out,  )
 
         # buffer for hat_z_l to be used for cost calculation
         self.buffer_hat_z_l = None
